@@ -1,0 +1,12 @@
+import {ArrowRight, BookOpen, Code2, FileText, Lightbulb, Send, Sparkles, Zap} from 'lucide-react'
+import {useState} from 'react'
+import {askQuestion, type Chat} from '../lib/api'
+
+export default function Home({onAnswer}:{onAnswer:(c:Chat)=>void}){
+ const [q,setQ]=useState('')
+ const [loading,setLoading]=useState(false)
+ const submit=async(text=q)=>{if(!text.trim())return;setLoading(true);try{onAnswer(await askQuestion(text));setQ('')}finally{setLoading(false)}}
+ const prompts=['How does CodeRAG retrieve documentation?','Explain FastAPI dependency injection','What are React component best practices?','How should I structure a RAG pipeline?']
+ return <main className="main-content"><div className="hero-card"><div className="hero-inner"><div className="hero-logo"><Code2 size={40}/></div><h1>Code<span>RAG</span></h1><h2>Your AI-Powered Developer<br/>Documentation Assistant</h2><p>Ask questions, find relevant documentation, and get grounded answers with source references — all in one place.</p></div><div className="hero-orb orb-one"/><div className="hero-orb orb-two"/></div><div className="feature-grid"><Feature icon={FileText} title="Instant Answers" text="Get quick answers from your indexed docs."/><Feature icon={Code2} title="Code Examples" text="Find practical snippets and implementation notes."/><Feature icon={BookOpen} title="Source Grounded" text="Every answer can show its documentation sources."/><Feature icon={Zap} title="Save Time" text="Search less and stay focused on building."/></div><div className="ask-box"><textarea value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit()}}} placeholder="Ask a question about your code, framework, or documentation..."/><div className="ask-bottom"><span><Sparkles size={16}/> MySQL-backed RAG</span><button onClick={()=>submit()} disabled={loading||!q.trim()}>{loading?'Searching...':'Ask CodeRAG'} <Send size={16}/></button></div></div><div className="try"><div className="try-title"><Lightbulb size={17}/> Try asking:</div><div className="prompt-grid">{prompts.map(p=><button key={p} onClick={()=>submit(p)}>{p}<ArrowRight size={15}/></button>)}</div></div></main>
+}
+function Feature({icon:Icon,title,text}:{icon:any,title:string,text:string}){return <div className="feature"><div className="feature-icon"><Icon size={21}/></div><strong>{title}</strong><p>{text}</p></div>}
